@@ -859,7 +859,7 @@ export default function Portfolio() {
       tags: ["InstructBLIP", "FAISS", "Sentence", "Transformers"],
       link: true,
       href: "https://github.com/S-Anshul/Content-Based-Image-Search",
-      img: "/img1.png",
+      img: import.meta.env.BASE_URL + "/img1.png",
     },
     {
       name: "MusicTube",
@@ -876,7 +876,7 @@ export default function Portfolio() {
       ],
       link: true,
       href: "https://github.com/S-Anshul/MusicTube",
-      img: "/img2.png",
+      img: import.meta.env.BASE_URL + "/img2.png",
     },
     {
       name: "StellarVision",
@@ -884,7 +884,7 @@ export default function Portfolio() {
       tags: ["React.JS", "TailwindCSS", "TypeScript"],
       link: true,
       href: "https://github.com/S-Anshul/StellarVision",
-      img: "/img3.png",
+      img: import.meta.env.BASE_URL +"/img3.png",
     },
   ];
 
