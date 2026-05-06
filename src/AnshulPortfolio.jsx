@@ -936,7 +936,7 @@ export default function Portfolio() {
               View Projects <Icon name="arrow" size={16} />
             </button>
             <a
-              href="https://drive.google.com/file/d/1fBnXACfdQhNhGqzaugQQBI0HqrY7SZw0/view?usp=sharing"
+              href="https://drive.google.com/file/d/1c_UK6WORGNy--jtHgGdUN9d5otUqiSfD/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
               className="nav-btn"
