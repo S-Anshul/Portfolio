@@ -411,6 +411,29 @@ const styles = `
   @media (max-width: 900px) {
     .nav { padding: 1rem 1.5rem; }
     .nav-links { display: none; }
+  .hamburger { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--text-dim); border-radius: 2px; transition: all 0.25s; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .mobile-menu {
+    position: fixed; top: 57px; left: 0; right: 0; z-index: 99;
+    background: rgba(13,17,23,0.98); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--card-border);
+    display: flex; flex-direction: column;
+    padding: 1rem 1.5rem 1.5rem;
+    gap: 0.25rem;
+    animation: slideDown 0.2s ease;
+  }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .mobile-menu a {
+    color: var(--text-dim); font-size: 1rem; font-weight: 500;
+    text-decoration: none; padding: 0.75rem 0;
+    border-bottom: 1px solid var(--card-border);
+    transition: color 0.2s;
+  }
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover { color: var(--blue-bright); }
     .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; gap: 2rem; }
     .section { padding: 3rem 1.5rem; }
     .about-grid { grid-template-columns: 1fr; }
@@ -915,9 +938,21 @@ const Icon = ({ name, size = 20 }) => {
 };
 
 export default function Portfolio() {
-  const [activeSection, setActiveSection] = useState("home");
+    const [activeSection, setActiveSection] = useState("home");
   const [selectedPost, setSelectedPost] = useState(null);
   const [activeTab, setActiveTab] = useState("portfolio"); // "portfolio" | "blog"
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleMobileNav = (id) => {
+    setMenuOpen(false);
+    if (id === "blog") {
+      setActiveTab("blog");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      setActiveTab("portfolio");
+      setTimeout(() => scrollTo(id), 50);
+    }
+  }
 
   const blogPosts = [
     {
@@ -1012,7 +1047,23 @@ export default function Portfolio() {
           </li>
         </ul>
         {/* <button className="nav-btn"><Icon name="download" size={16} /> Download Resume</button> */}
+                <button className={`hamburger ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen(o => !o)} aria-label="Menu">
+          <span /><span /><span />
+        </button>
       </nav>
+      {menuOpen && (
+        <div className="mobile-menu">
+          {["About", "Skills", "Experience", "Projects", "Contact"].map((s) => (
+            <a key={s} href={`#${s.toLowerCase()}`} onClick={(e) => { e.preventDefault(); handleMobileNav(s.toLowerCase()); }}>
+              {s}
+            </a>
+          ))}
+          <a href="#blog" onClick={(e) => { e.preventDefault(); handleMobileNav("blog"); }}
+            style={{ color: activeTab === "blog" ? "var(--blue-bright)" : undefined }}>
+            Blog
+          </a>
+        </div>
+      )}
 
       {/* BLOG MODAL — available on both tabs */}
       {selectedPost && (
