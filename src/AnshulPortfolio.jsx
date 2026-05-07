@@ -340,6 +340,74 @@ const styles = `
   }
   .scroll-top:hover { border-color: var(--blue); color: var(--blue-bright); transform: translateY(-2px); }
 
+  /* BLOG */
+  .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .blog-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+    display: flex; flex-direction: column; gap: 0.75rem;
+  }
+  .blog-card:hover { border-color: var(--blue); transform: translateY(-4px); box-shadow: 0 12px 32px var(--danger-glow); }
+  .blog-tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background: rgba(220,38,38,0.12);
+    border: 1px solid rgba(220,38,38,0.3);
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.72rem; color: var(--blue-bright);
+    width: fit-content;
+  }
+  .blog-title { font-size: 1rem; font-weight: 700; line-height: 1.4; color: var(--text); }
+  .blog-date { font-family: 'Fira Code', monospace; font-size: 0.75rem; color: var(--text-muted); }
+  .blog-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; font-family: 'Fira Code', monospace; font-weight: 300; flex: 1; }
+  .blog-read-more { font-size: 0.8rem; color: var(--blue-bright); font-weight: 600; display: flex; align-items: center; gap: 0.3rem; margin-top: 0.5rem; }
+
+  /* BLOG MODAL */
+  .blog-modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .blog-modal {
+    background: var(--bg2);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    max-width: 680px; width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 2.5rem;
+    position: relative;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .blog-modal-close {
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    width: 32px; height: 32px;
+    border: 1px solid var(--card-border);
+    border-radius: 50%;
+    background: var(--bg3);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; line-height: 1;
+    transition: all 0.2s;
+  }
+  .blog-modal-close:hover { border-color: var(--blue); color: var(--blue-bright); }
+  .blog-modal-tag { margin-bottom: 1rem; }
+  .blog-modal-title { font-size: 1.5rem; font-weight: 800; line-height: 1.3; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+  .blog-modal-date { font-family: 'Fira Code', monospace; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.75rem; }
+  .blog-modal-divider { height: 1px; background: var(--card-border); margin-bottom: 1.75rem; }
+  .blog-modal-content { font-size: 0.9rem; color: var(--text-muted); line-height: 1.9; font-family: 'Fira Code', monospace; font-weight: 300; white-space: pre-wrap; }
+
   @media (max-width: 900px) {
     .nav { padding: 1rem 1.5rem; }
     .nav-links { display: none; }
@@ -352,6 +420,7 @@ const styles = `
     .exp-item { grid-template-columns: 1fr; }
     .exp-logo { display: none; }
     .contact-grid { grid-template-columns: repeat(2, 1fr); }
+    .blog-grid { grid-template-columns: 1fr; }
     .footer { flex-direction: column; gap: 1rem; text-align: center; }
     .hero-title { font-size: 2.5rem; }
   }
@@ -847,6 +916,17 @@ const Icon = ({ name, size = 20 }) => {
 
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState("home");
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [activeTab, setActiveTab] = useState("portfolio"); // "portfolio" | "blog"
+
+  const blogPosts = [
+    {
+      title: "The Week Before Everything Changed",
+      date: "May 1, 2026",
+      shortDescription: "A quiet day filled with uncertainty, hope, and the strange confidence that life was finally about to move forward.",
+      fullContent: "Not every story starts with someone believing in you. Some start with just one person who refuses to give up."
+    },
+  ];
 
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -904,22 +984,91 @@ export default function Portfolio() {
                 href={`#${s.toLowerCase()}`}
                 onClick={(e) => {
                   e.preventDefault();
-                  scrollTo(s.toLowerCase());
+                  setActiveTab("portfolio");
+                  setTimeout(() => scrollTo(s.toLowerCase()), 50);
                 }}
+                style={{ color: activeTab === "portfolio" ? undefined : "var(--text-muted)" }}
               >
                 {s}
               </a>
             </li>
           ))}
+          <li>
+            <a
+              href="#blog"
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveTab("blog");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              style={{
+                color: activeTab === "blog" ? "var(--blue-bright)" : "var(--text-dim)",
+                borderBottom: activeTab === "blog" ? "2px solid var(--blue-bright)" : "2px solid transparent",
+                paddingBottom: "2px",
+              }}
+            >
+              Blog
+            </a>
+          </li>
         </ul>
         {/* <button className="nav-btn"><Icon name="download" size={16} /> Download Resume</button> */}
       </nav>
 
-      {/* HERO */}
+      {/* BLOG MODAL — available on both tabs */}
+      {selectedPost && (
+        <div className="blog-modal-overlay" onClick={() => setSelectedPost(null)}>
+          <div className="blog-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="blog-modal-close" onClick={() => setSelectedPost(null)}>✕</button>
+            <div className="blog-modal-tag">
+              <span className="blog-tag">Journal</span>
+            </div>
+            <div className="blog-modal-title">{selectedPost.title}</div>
+            <div className="blog-modal-date">{selectedPost.date}</div>
+            <div className="blog-modal-divider" />
+            <div className="blog-modal-content">{selectedPost.fullContent}</div>
+          </div>
+        </div>
+      )}
+
+      {/* BLOG TAB PAGE */}
+      {activeTab === "blog" && (
+        <div style={{ paddingTop: "6rem", minHeight: "100vh" }}>
+          <section className="section">
+            <div className="section-title">
+              <svg width={20} height={20} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "var(--blue-bright)" }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <span>Blog</span>
+            </div>
+            <p style={{ fontSize: "0.9rem", color: "var(--text-muted)", fontFamily: "'Fira Code', monospace", marginBottom: "2.5rem", maxWidth: "520px", lineHeight: 1.7 }}>
+              Thoughts, reflections, and moments I want to remember.
+            </p>
+            <div className="blog-grid">
+              {blogPosts.map((post) => (
+                <div key={post.title} className="blog-card" onClick={() => setSelectedPost(post)}>
+                  <span className="blog-tag">Journal</span>
+                  <div className="blog-title">{post.title}</div>
+                  <div className="blog-date">{post.date}</div>
+                  <div className="blog-desc">{post.shortDescription}</div>
+                  <div className="blog-read-more">
+                    Read more
+                    <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* HERO — only shown in portfolio tab */}
+      {activeTab === "portfolio" && (
+      <>
       <section className="hero" id="home">
         <div>
           <div className="hero-greeting">Hey there!</div>
-          {/* <h1 className="hero-title">I'm <span className="name">Anshul </span></h1> */}
           <div className="hero-subtitle">
             Full Stack Developer & <br />
             AI Enthusiast
@@ -1235,6 +1384,8 @@ export default function Portfolio() {
           <Icon name="up" size={16} />
         </div>
       </footer>
+      </>
+      )}
     </div>
   );
 }
